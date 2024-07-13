@@ -10,7 +10,7 @@ paths:
   /auth/login:
     post:
       summary: Gives user access to resources
-      requestBody:
+      requestBody:  
         content:
           application/json:
             schema:
@@ -22,7 +22,7 @@ paths:
                   password: "succesfulpasscode"
       responses:
         '200':
-          description: Successfully logged in
+          description: Succesfully logged in
           content:
             application/json:
               schema:
@@ -31,9 +31,9 @@ paths:
                 example-1:
                   value:
                     token: "djfikdoklsosjfodkdfi8489rjdksdodjdoldjdfl"
-                    status: "successful"
+                    status: "succesful"
         '401':
-          description: Unauthorized access
+          description: Unauthorised access
           content:
             application/json:
               schema:
@@ -86,7 +86,7 @@ paths:
                 value:
                   oldPassword: "oldCode"
                   newPassword: "newCode"
-      responses:
+      responses: 
         '200':
           description: Password changed
         '400':
@@ -105,7 +105,7 @@ paths:
   /messages/email:
     post:
       summary: Users are able to send emails with this
-      requestBody:
+      requestBody:  
         content:
           application/json:
             schema:
@@ -116,7 +116,7 @@ paths:
                   emailTo: "prosper@gmail.com"
                   subject: "Welcome brother prosper"
                   body: "We want to welcome you into our denomination"
-      responses:
+      responses: 
         '200':
           description: Email sent successfully
         '400':
@@ -135,7 +135,7 @@ paths:
   /payments/stripe:
     post:
       summary: Processes stripe payment
-      requestBody:
+      requestBody:  
         content:
           application/json:
             schema:
@@ -146,7 +146,7 @@ paths:
                   amount: 50.0
                   currency: "USD"
                   source: "tok_visa"
-      responses:
+      responses: 
         '200':
           description: Payment successfully processed
         '400':
@@ -165,7 +165,7 @@ paths:
   /payments/flutterwave:
     post:
       summary: Processes flutterwave payment
-      requestBody:
+      requestBody:  
         content:
           application/json:
             schema:
@@ -176,7 +176,7 @@ paths:
                   amount: 150.0
                   currency: "NGN"
                   source: "flw_card"
-      responses:
+      responses: 
         '200':
           description: Payment successfully processed
         '400':
@@ -206,8 +206,21 @@ paths:
                   $ref: '#/components/schemas/User'
               examples:
                 example-1:
-                  value: [{"id":1, "name":"Prebor Tamarakro", "email":"prebstamar@gmail.com","organization":{"id":1, "name":"prebsOrg"}},{"id":2, "name":"Peter Emmanuel", "email":"peteremma@gmail.com","organization":{"id":1, "name":"prebsOrg"}}]
-    post:
+                  value: 
+                    - id: 1
+                      name: "Prebor Tamarakro"
+                      email: "prebstamar@gmail.com"
+                      organization:
+                        id: 1
+                        name: "prebsOrg"
+                    - id: 2
+                      name: "Peter Emmanuel"
+                      email: "peteremma@gmail.com"
+                      organization:
+                        id: 1
+                        name: "prebsOrg"
+
+    post: 
       summary: Create a new user
       requestBody:
         content:
@@ -234,7 +247,9 @@ paths:
                     id: 1
                     name: "Prebor Emmanuel"
                     email: "emma@gmail.com"
-                    organization: {"id":1, "name":"prebsOrg"}
+                    organization:
+                      id: 1
+                      name: "prebsOrg"
         '400':
           description: Bad request
           content:
@@ -255,7 +270,7 @@ paths:
         - name: id
           in: path
           required: true
-          schema:
+          schema: 
             type: integer
       responses:
         '200':
@@ -270,7 +285,9 @@ paths:
                     id: 1
                     name: "Prebor Emmanuel"
                     email: "emma@gmail.com"
-                    organization: {"id":1, "name":"prebsOrg"}
+                    organization:
+                      id: 1
+                      name: "prebsOrg"
         '404':
           description: User not found
           content:
@@ -283,6 +300,7 @@ paths:
                     message: "User could not be located"
                     status: "not found"
                     code: 404
+
     put:
       summary: Update user information
       parameters:
@@ -302,7 +320,7 @@ paths:
                 value:
                   email: "emma@gmail.com"
                   name: "updated user"
-                  password: "dgfhkodos"
+                  password: "dgfhkodos"  
       responses:
         '200':
           description: User updated successfully
@@ -343,9 +361,14 @@ paths:
                   $ref: '#/components/schemas/Organization'
               examples:
                 example-1:
-                  value: [{"id":1, "name":"prebsOrg"},{id":2, "name":"emmasOrg"}]
-    post:
-      summary: Create a new organization
+                  value: 
+                    - id: 1
+                      name: "prebsOrg"
+                    - id: 2
+                      name: "emmasOrg"
+
+    post: 
+      summary: Create an organization
       requestBody:
         content:
           application/json:
@@ -357,7 +380,7 @@ paths:
                   name: "prebsOrg"
       responses:
         '201':
-          description: Organization has been persisted
+          description: Organization created successfully
           content:
             application/json:
               schema:
@@ -378,173 +401,140 @@ paths:
                   value:
                     message: "Organization could not be persisted"
                     status: "error"
-                    code: 400 
+                    code: 400
+
+  /organizations/{id}:
+    get:
+      summary: Get organization by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: 
+            type: integer
+      responses:
+        '200':
+          description: Organization has been found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+              examples:
+                example-1:
+                  value:
+                    id: 1
+                    name: "prebsOrg"
+        '404':
+          description: Organization not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                example-1:
+                  value:
+                    message: "Organization could not be located"
+                    status: "not found"
+                    code: 404
+
 components:
   schemas:
     LoginRequest:
       type: object
       properties:
         email:
-          type: string 
+          type: string
         password:
           type: string
-      example:
-        email: "prebstamar@gmail.com"
-        password: "passcode12345"
+
     AuthResponse:
       type: object
       properties:
         token:
-          type: string 
+          type: string
         status:
           type: string
-      example:
-        token: "dhisdhihoihriowry8030hdshdihskddd"
-        status: "success"
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string 
-        status:
-          type: string
-        code:
-          type: integer  
-      example:
-        message: "invalid email or password"
-        status: "error"
-        code: 401
-    UserUpdateRequest:
+
+    MagicLinkRequest:
       type: object
       properties:
         email:
-          type: string 
-        name:
           type: string
-        password:
-          type: string  
-      example:
-        email: "prebs@gmail.com"
-        name: "Tamarakro Prebor"
-        password: "suhsihoshl"
+
+    ChangePasswordRequest:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+
+    EmailRequest:
+      type: object
+      properties:
+        emailTo:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+
+    StripePaymentRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+
+    FlutterwavePaymentRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+
     User:
       type: object
       properties:
         id:
           type: integer
-        email:
-          type: string 
         name:
-          type: string 
+          type: string
+        email:
+          type: string
         organization:
-          $ref: '#/components/schemas/Organization'     
-      example:
-        id: 1
-        email: "prebs@gmail.com"
-        name: "Tamarakro Prebor"
-    BlogPost:
+          $ref: '#/components/schemas/Organization'
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    Organization:
       type: object
       properties:
         id:
           type: integer
-        title:
-          type: string 
-        content:
+        name:
           type: string
-        author:
-          $ref: '#/components/schemas/User'  
-      example:
-        id: 1
-        title: "Blog post 1"
-        author: 
-          id: 1
-          email: "prebstam@gmail.com"
-          name: "Divine Prebor"
-    Organization:
+
+    ErrorResponse:
       type: object
       properties:
-        id: 
+        message:
+          type: string
+        status:
+          type: string
+        code:
           type: integer
-        name: 
-          type: string
-      example:
-        id: 1
-        name: "prebsorg"
-    MagicLinkRequest:
-      type: object
-      properties:
-        email: 
-          type: string
-      example:
-        email: "prebs@gmail.com"
-    ChangePasswordRequest:
-      type: object
-      properties:
-        oldPassword: 
-          type: string
-        newPassword: 
-          type: string  
-      example:
-        oldPassword: "prrehirhfo"
-        newPassword: "pefegggo" 
-    EmailRequest:
-      type: object
-      properties:
-        emailTo: 
-          type: string
-        subject: 
-          type: string
-        body: 
-          type: string    
-      example:
-        emailTo: "prebs@yahoo.com"
-        subject: "I am Tired"
-        body: "Hello, I am trying my best"
-    StripePaymentRequest:
-      type: object
-      properties:
-        amount: 
-          type: number
-        currency: 
-          type: string
-        source: 
-          type: string    
-      example:
-        amount: 50.0
-        currency: "USD"
-        source: "tok_visa"
-    FlutterwavePaymentRequest:
-      type: object
-      properties:
-        amount: 
-          type: number
-        currency: 
-          type: string
-        source: 
-          type: string    
-      example:
-        amount: 150.0
-        currency: "NGN"
-        source: "flw_card"                     
-
-
-
-
-                  
-
-
-
-  
-
-
-
-
-          
-
-
-        
-
-
-
-
-              		
