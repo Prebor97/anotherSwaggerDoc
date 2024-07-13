@@ -477,7 +477,7 @@ components:
           type: string
       example:
         email: "prebs@gmail.com"
-     ChangePasswordRequest:
+    ChangePasswordRequest:
       type: object
       properties:
         oldPassword: 
