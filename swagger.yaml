@@ -22,7 +22,7 @@ paths:
                   password: "succesfulpasscode"
       responses:
         '200':
-          description: Succesfully logged in
+          description: Successfully logged in
           content:
             application/json:
               schema:
@@ -31,9 +31,9 @@ paths:
                 example-1:
                   value:
                     token: "djfikdoklsosjfodkdfi8489rjdksdodjdoldjdfl"
-                    status: "succesful"
+                    status: "successful"
         '401':
-          description: Unauthorised access
+          description: Unauthorized access
           content:
             application/json:
               schema:
@@ -44,7 +44,6 @@ paths:
                     message: "invalid email or password"
                     status: "error"
                     code: 401
-
   /auth/magic-link:
     post:
       summary: Authentication with magic link
@@ -72,7 +71,6 @@ paths:
                     message: "invalid email or password"
                     status: "error"
                     code: 401
-
   /auth/change-password:
     post:
       summary: Changes the password of the user
@@ -101,7 +99,6 @@ paths:
                     message: "password incorrect"
                     status: "error"
                     code: 400
-
   /messages/email:
     post:
       summary: Users are able to send emails with this
@@ -130,8 +127,7 @@ paths:
                   value:
                     message: "error processing email request"
                     status: "error"
-                    code: 400
-
+                    code: 400       
   /payments/stripe:
     post:
       summary: Processes stripe payment
@@ -161,7 +157,6 @@ paths:
                     message: "error processing payment request"
                     status: "error"
                     code: 400
-
   /payments/flutterwave:
     post:
       summary: Processes flutterwave payment
@@ -191,7 +186,6 @@ paths:
                     message: "error processing payment request"
                     status: "error"
                     code: 400
-
   /users:
     get:
       summary: Get all users
@@ -206,20 +200,26 @@ paths:
                   $ref: '#/components/schemas/User'
               examples:
                 example-1:
-                  value: 
-                    - id: 1
-                      name: "Prebor Tamarakro"
-                      email: "prebstamar@gmail.com"
-                      organization:
-                        id: 1
-                        name: "prebsOrg"
-                    - id: 2
-                      name: "Peter Emmanuel"
-                      email: "peteremma@gmail.com"
-                      organization:
-                        id: 1
-                        name: "prebsOrg"
-
+                  value: [
+                    {
+                      "id": 1,
+                      "name": "Prebor Tamarakro",
+                      "email": "prebstamar@gmail.com",
+                      "organization": {
+                        "id": 1,
+                        "name": "prebsOrg"
+                      }
+                    },
+                    {
+                      "id": 2,
+                      "name": "Peter Emmanuel",
+                      "email": "peteremma@gmail.com",
+                      "organization": {
+                        "id": 1,
+                        "name": "prebsOrg"
+                      }
+                    }
+                  ]
     post: 
       summary: Create a new user
       requestBody:
@@ -247,9 +247,10 @@ paths:
                     id: 1
                     name: "Prebor Emmanuel"
                     email: "emma@gmail.com"
-                    organization:
-                      id: 1
+                    organization: {
+                      id: 1,
                       name: "prebsOrg"
+                    }
         '400':
           description: Bad request
           content:
@@ -262,7 +263,6 @@ paths:
                     message: "User could not be persisted"
                     status: "error"
                     code: 400
-
   /users/{id}:
     get:
       summary: Get a user by ID
@@ -285,9 +285,10 @@ paths:
                     id: 1
                     name: "Prebor Emmanuel"
                     email: "emma@gmail.com"
-                    organization:
-                      id: 1
+                    organization: {
+                      id: 1,
                       name: "prebsOrg"
+                    }
         '404':
           description: User not found
           content:
@@ -300,7 +301,6 @@ paths:
                     message: "User could not be located"
                     status: "not found"
                     code: 404
-
     put:
       summary: Update user information
       parameters:
@@ -319,7 +319,7 @@ paths:
               example-1:
                 value:
                   email: "emma@gmail.com"
-                  name: "updated user"
+                  name:  "updated user"
                   password: "dgfhkodos"  
       responses:
         '200':
@@ -346,50 +346,61 @@ paths:
                     message: "User could not be located"
                     status: "not found"
                     code: 404
-
-  /organizations:
-    get:
-      summary: Get all possible organizations
+    delete:
+      summary: Delete a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
-          description: A list of organizations
+          description: User deleted
+        '404':
+          description: User not found
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/ErrorResponse'
               examples:
                 example-1:
-                  value: 
-                    - id: 1
-                      name: "prebsOrg"
-                    - id: 2
-                      name: "emmasOrg"
+                  value:
+                    message: "User could not be located"
+                    status: "not found"
+                    code: 404
 
-    post: 
-      summary: Create an organization
+  /blogs:
+    post:
+      summary: Create a new blog
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organization'
+              $ref: '#/components/schemas/Blog'
             examples:
               example-1:
                 value:
-                  name: "prebsOrg"
+                  title: "New Blog Title"
+                  content: "This is the content of the new blog."
+                  user_id: 1
       responses:
         '201':
-          description: Organization created successfully
+          description: Blog has been created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/Blog'
               examples:
                 example-1:
                   value:
                     id: 1
-                    name: "prebsOrg"
+                    title: "New Blog Title"
+                    content: "This is the content of the new blog."
+                    user: {
+                      id: 1,
+                      name: "Prebor Emmanuel"
+                    }
         '400':
           description: Bad request
           content:
@@ -399,33 +410,70 @@ paths:
               examples:
                 example-1:
                   value:
-                    message: "Organization could not be persisted"
+                    message: "Blog could not be created"
                     status: "error"
                     code: 400
-
-  /organizations/{id}:
     get:
-      summary: Get organization by ID
+      summary: Get all blogs
+      responses:
+        '200':
+          description: Returns a list of blogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Blog'
+              examples:
+                example-1:
+                  value: [
+                    {
+                      "id": 1,
+                      "title": "First Blog",
+                      "content": "This is the content of the first blog.",
+                      "user": {
+                        "id": 1,
+                        "name": "Prebor Emmanuel"
+                      }
+                    },
+                    {
+                      "id": 2,
+                      "title": "Second Blog",
+                      "content": "This is the content of the second blog.",
+                      "user": {
+                        "id": 2,
+                        "name": "Peter Emmanuel"
+                      }
+                    }
+                  ]
+  /blogs/{id}:
+    get:
+      summary: Get a blog by ID
       parameters:
         - name: id
           in: path
           required: true
-          schema: 
+          schema:
             type: integer
       responses:
         '200':
-          description: Organization has been found
+          description: Blog has been found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/Blog'
               examples:
                 example-1:
                   value:
                     id: 1
-                    name: "prebsOrg"
+                    title: "First Blog"
+                    content: "This is the content of the first blog."
+                    user: {
+                      id: 1,
+                      name: "Prebor Emmanuel"
+                    }
         '404':
-          description: Organization not found
+          description: Blog not found
           content:
             application/json:
               schema:
@@ -433,9 +481,207 @@ paths:
               examples:
                 example-1:
                   value:
-                    message: "Organization could not be located"
+                    message: "Blog could not be located"
                     status: "not found"
                     code: 404
+    put:
+      summary: Update a blog
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Blog'
+            examples:
+              example-1:
+                value:
+                  title: "Updated Blog Title"
+                  content: "This is the updated content of the blog."
+      responses:
+        '200':
+          description: Blog updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blog'
+              examples:
+                example-1:
+                  value:
+                    id: 1
+                    title: "Updated Blog Title"
+                    content: "This is the updated content of the blog."
+                    user: {
+                      id: 1,
+                      name: "Prebor Emmanuel"
+                    }
+        '404':
+          description: Blog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                example-1:
+                  value:
+                    message: "Blog could not be located"
+                    status: "not found"
+                    code: 404
+    delete:
+      summary: Delete a blog
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Blog deleted
+        '404':
+          description: Blog not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                example-1:
+                  value:
+                    message: "Blog could not be located"
+                    status: "not found"
+                    code: 404
+
+  /languages:
+    post:
+      summary: Create a new language
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Language'
+            examples:
+              example-1:
+                value:
+                  name: "English"
+                  code: "en"
+      responses:
+        '201':
+          description: Language has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+              examples:
+                example-1:
+                  value:
+                    id: 1
+                    name: "English"
+                    code: "en"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                example-1:
+                  value:
+                    message: "Language could not be created"
+                    status: "error"
+                    code: 400
+    get:
+      summary: Get all languages
+      responses:
+        '200':
+          description: Returns a list of languages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Language'
+              examples:
+                example-1:
+                  value: [
+                    {
+                      "id": 1,
+                      "name": "English",
+                      "code": "en"
+                    },
+                    {
+                      "id": 2,
+                      "name": "French",
+                      "code": "fr"
+                    }
+                  ]
+
+  /regions:
+    post:
+      summary: Create a new region
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Region'
+            examples:
+              example-1:
+                value:
+                  name: "North America"
+                  code: "NA"
+      responses:
+        '201':
+          description: Region has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+              examples:
+                example-1:
+                  value:
+                    id: 1
+                    name: "North America"
+                    code: "NA"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                example-1:
+                  value:
+                    message: "Region could not be created"
+                    status: "error"
+                    code: 400
+    get:
+      summary: Get all regions
+      responses:
+        '200':
+          description: Returns a list of regions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Region'
+              examples:
+                example-1:
+                  value: [
+                    {
+                      "id": 1,
+                      "name": "North America",
+                      "code": "NA"
+                    },
+                    {
+                      "id": 2,
+                      "name": "Europe",
+                      "code": "EU"
+                    }
+                  ]
 
 components:
   schemas:
@@ -446,7 +692,6 @@ components:
           type: string
         password:
           type: string
-
     AuthResponse:
       type: object
       properties:
@@ -454,81 +699,6 @@ components:
           type: string
         status:
           type: string
-
-    MagicLinkRequest:
-      type: object
-      properties:
-        email:
-          type: string
-
-    ChangePasswordRequest:
-      type: object
-      properties:
-        oldPassword:
-          type: string
-        newPassword:
-          type: string
-
-    EmailRequest:
-      type: object
-      properties:
-        emailTo:
-          type: string
-        subject:
-          type: string
-        body:
-          type: string
-
-    StripePaymentRequest:
-      type: object
-      properties:
-        amount:
-          type: number
-        currency:
-          type: string
-        source:
-          type: string
-
-    FlutterwavePaymentRequest:
-      type: object
-      properties:
-        amount:
-          type: number
-        currency:
-          type: string
-        source:
-          type: string
-
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        email:
-          type: string
-        organization:
-          $ref: '#/components/schemas/Organization'
-
-    UserUpdateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-
-    Organization:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-
     ErrorResponse:
       type: object
       properties:
@@ -538,3 +708,100 @@ components:
           type: string
         code:
           type: integer
+    MagicLinkRequest:
+      type: object
+      properties:
+        email:
+          type: string
+    ChangePasswordRequest:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+    EmailRequest:
+      type: object
+      properties:
+        emailTo:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+    StripePaymentRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+    FlutterwavePaymentRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+        source:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        password_hash:
+          type: string
+        organization:
+          $ref: '#/components/schemas/Organization'
+    UserUpdateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+    Organization:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Blog:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+    Language:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+    Region:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
